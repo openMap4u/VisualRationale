@@ -23,6 +23,9 @@ export class VegaLiteComponent extends LitElement {
   @property({ type: Array })
   data: any[] | null = null;
 
+  @property({ type: Array })
+  data: any[] | null = null;
+
   @query('#vis')
   visContainer!: HTMLDivElement;
 
@@ -32,25 +35,8 @@ export class VegaLiteComponent extends LitElement {
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-    if (changedProperties.has('spec')) {
-      this._dispose?.();
-      if (this.spec) {
-        this._dispose = effect(() => {
-          const specValue = this.spec?.value;
-          if (specValue) {
-            this.renderVega(specValue);
-          } else {
-            this.finalizeView();
-          }
-        });
-      }
-    }
-
-    if (changedProperties.has('data')) {
-      const specValue = this.spec?.peek();
-      if (specValue) {
-        this.renderVega(specValue);
-      }
+    if ((changedProperties.has('spec') || changedProperties.has('data')) && this.spec) {
+      this.renderVega();
     }
   }
 
@@ -76,12 +62,12 @@ export class VegaLiteComponent extends LitElement {
     try {
       this.finalizeView();
 
-      let finalSpec = spec;
+      let spec = this.spec;
       if (this.data) {
-        finalSpec = { ...spec, data: { values: this.data } };
+        spec = { ...this.spec, data: { values: this.data } };
       }
 
-      const result = await embed(this.visContainer, finalSpec, { actions: false });
+      const result = await embed(this.visContainer, spec, { actions: false });
 
       if (this._renderId !== currentRenderId) {
         // A new render started while we were waiting, so discard this result

@@ -36,41 +36,6 @@ describe('VegaLiteComponent', () => {
     expect(el.shadowRoot?.querySelector('#vis')).toBeTruthy();
   });
 
-  it('updates when signal value changes', async () => {
-     const spec1 = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": { "values": [] },
-      "mark": "bar",
-      "encoding": {}
-    };
-     const spec2 = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": { "values": [] },
-      "mark": "point",
-      "encoding": {}
-    };
-
-    const el = document.createElement('vega-lite-component') as VegaLiteComponent;
-    document.body.appendChild(el);
-
-    const specSignal = signal<VisualizationSpec | null>(spec1 as any);
-    el.spec = specSignal;
-
-    // Wait for first render
-    await new Promise((resolve) => el.addEventListener('vega-rendered', resolve, { once: true }));
-
-    // Setup listener for second render
-    const rendered2 = new Promise((resolve) => {
-      el.addEventListener('vega-rendered', resolve, { once: true });
-    });
-
-    // Update signal
-    specSignal.value = spec2 as any;
-
-    await rendered2;
-    expect(true).toBe(true);
-  });
-
   it('updates visualization when data property is set', async () => {
     const spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
