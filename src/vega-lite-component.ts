@@ -20,6 +20,9 @@ export class VegaLiteComponent extends LitElement {
   @property({ attribute: false })
   spec: Signal<VisualizationSpec | null> | null = null;
 
+  @property({ type: Array })
+  data: any[] | null = null;
+
   @query('#vis')
   visContainer!: HTMLDivElement;
 
@@ -40,6 +43,13 @@ export class VegaLiteComponent extends LitElement {
             this.finalizeView();
           }
         });
+      }
+    }
+
+    if (changedProperties.has('data')) {
+      const specValue = this.spec?.peek();
+      if (specValue) {
+        this.renderVega(specValue);
       }
     }
   }
@@ -66,7 +76,12 @@ export class VegaLiteComponent extends LitElement {
     try {
       this.finalizeView();
 
-      const result = await embed(this.visContainer, spec, { actions: false });
+      let finalSpec = spec;
+      if (this.data) {
+        finalSpec = { ...spec, data: { values: this.data } };
+      }
+
+      const result = await embed(this.visContainer, finalSpec, { actions: false });
 
       if (this._renderId !== currentRenderId) {
         // A new render started while we were waiting, so discard this result

@@ -70,4 +70,44 @@ describe('VegaLiteComponent', () => {
     await rendered2;
     expect(true).toBe(true);
   });
+
+  it('updates visualization when data property is set', async () => {
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "data": { "values": [] },
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "a", "type": "ordinal"},
+        "y": {"field": "b", "type": "quantitative"}
+      }
+    };
+
+    const el = document.createElement('vega-lite-component') as VegaLiteComponent;
+    document.body.appendChild(el);
+
+    // Need to use signal here
+    const specSignal = signal<VisualizationSpec | null>(spec as any);
+    el.spec = specSignal;
+
+    await new Promise((resolve) => el.addEventListener('vega-rendered', resolve, { once: true }));
+
+    const data = [
+      {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43}
+    ];
+
+    let view: any;
+    const renderedAgain = new Promise<void>((resolve) => {
+      el.addEventListener('vega-rendered', (e: any) => {
+        view = e.detail.view;
+        resolve();
+      }, { once: true });
+    });
+
+    el.data = data;
+
+    await renderedAgain;
+
+    expect(view).toBeTruthy();
+    expect(el.data).toEqual(data);
+  });
 });
