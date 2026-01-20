@@ -1,0 +1,83 @@
+import { LitElement, html, css, PropertyValueMap } from 'lit';
+import { customElement, property, query } from 'lit/decorators.js';
+import embed, { VisualizationSpec } from 'vega-embed';
+
+@customElement('vega-lite-component')
+export class VegaLiteComponent extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #vis {
+      width: 100%;
+      height: 100%;
+    }
+  `;
+
+  @property({ type: Object })
+  spec: VisualizationSpec | null = null;
+
+  @query('#vis')
+  visContainer!: HTMLDivElement;
+
+  private _view: any = null;
+  private _renderId = 0;
+
+  override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('spec') && this.spec) {
+      this.renderVega();
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.finalizeView();
+  }
+
+  finalizeView() {
+    if (this._view) {
+      this._view.finalize();
+      this._view = null;
+    }
+  }
+
+  async renderVega() {
+    if (!this.spec || !this.visContainer) return;
+
+    this._renderId++;
+    const currentRenderId = this._renderId;
+
+    try {
+      this.finalizeView();
+
+      const result = await embed(this.visContainer, this.spec, { actions: false });
+
+      if (this._renderId !== currentRenderId) {
+        // A new render started while we were waiting, so discard this result
+        result.view.finalize();
+        return;
+      }
+
+      this._view = result.view;
+      this.dispatchEvent(new CustomEvent('vega-rendered', { detail: { view: this._view } }));
+    } catch (error) {
+      if (this._renderId === currentRenderId) {
+        console.error('Error rendering Vega-Lite chart:', error);
+        this.dispatchEvent(new CustomEvent('vega-error', { detail: { error } }));
+      }
+    }
+  }
+
+  render() {
+    return html`<div id="vis"></div>`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'vega-lite-component': VegaLiteComponent;
+  }
+}
