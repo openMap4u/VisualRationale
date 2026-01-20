@@ -19,6 +19,9 @@ export class VegaLiteComponent extends LitElement {
   @property({ type: Object })
   spec: VisualizationSpec | null = null;
 
+  @property({ type: Array })
+  data: any[] | null = null;
+
   @query('#vis')
   visContainer!: HTMLDivElement;
 
@@ -27,7 +30,7 @@ export class VegaLiteComponent extends LitElement {
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-    if (changedProperties.has('spec') && this.spec) {
+    if ((changedProperties.has('spec') || changedProperties.has('data')) && this.spec) {
       this.renderVega();
     }
   }
@@ -53,7 +56,12 @@ export class VegaLiteComponent extends LitElement {
     try {
       this.finalizeView();
 
-      const result = await embed(this.visContainer, this.spec, { actions: false });
+      let spec = this.spec;
+      if (this.data) {
+        spec = { ...this.spec, data: { values: this.data } };
+      }
+
+      const result = await embed(this.visContainer, spec, { actions: false });
 
       if (this._renderId !== currentRenderId) {
         // A new render started while we were waiting, so discard this result

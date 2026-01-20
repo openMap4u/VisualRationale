@@ -32,4 +32,41 @@ describe('VegaLiteComponent', () => {
     expect(el.spec).toEqual(spec);
     expect(el.shadowRoot?.querySelector('#vis')).toBeTruthy();
   });
+
+  it('updates visualization when data property is set', async () => {
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "data": { "values": [] },
+      "mark": "bar",
+      "encoding": {
+        "x": {"field": "a", "type": "ordinal"},
+        "y": {"field": "b", "type": "quantitative"}
+      }
+    };
+
+    const el = document.createElement('vega-lite-component') as VegaLiteComponent;
+    document.body.appendChild(el);
+    el.spec = spec as any;
+
+    await new Promise((resolve) => el.addEventListener('vega-rendered', resolve, { once: true }));
+
+    const data = [
+      {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43}
+    ];
+
+    let view: any;
+    const renderedAgain = new Promise<void>((resolve) => {
+      el.addEventListener('vega-rendered', (e: any) => {
+        view = e.detail.view;
+        resolve();
+      }, { once: true });
+    });
+
+    el.data = data;
+
+    await renderedAgain;
+
+    expect(view).toBeTruthy();
+    expect(el.data).toEqual(data);
+  });
 });
