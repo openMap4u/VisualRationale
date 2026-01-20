@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DataController } from './data-controller';
-import { VegaLiteComponent } from './vega-lite-component';
 
 // Mock VegaLiteComponent
 class MockComponent {
@@ -10,12 +9,10 @@ class MockComponent {
 describe('DataController', () => {
   let controller: DataController;
   let component1: any;
-  let component2: any;
 
   beforeEach(() => {
     controller = new DataController();
     component1 = new MockComponent();
-    component2 = new MockComponent();
 
     // Mock fetch
     global.fetch = vi.fn();

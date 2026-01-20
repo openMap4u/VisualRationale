@@ -58,7 +58,7 @@ export class VegaLiteComponent extends LitElement {
 
       let spec = this.spec;
       if (this.data) {
-        spec = { ...this.spec, data: { values: this.data } };
+        spec = { ...this.spec, data: { values: this.data } } as any;
       }
 
       const result = await embed(this.visContainer, spec, { actions: false });
