@@ -1,6 +1,7 @@
 import { LitElement, html, css, PropertyValueMap } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import embed, { VisualizationSpec } from 'vega-embed';
+import { effect, Signal } from '@preact/signals-core';
 
 @customElement('vega-lite-component')
 export class VegaLiteComponent extends LitElement {
@@ -16,8 +17,11 @@ export class VegaLiteComponent extends LitElement {
     }
   `;
 
-  @property({ type: Object })
-  spec: VisualizationSpec | null = null;
+  @property({ attribute: false })
+  spec: Signal<VisualizationSpec | null> | null = null;
+
+  @property({ type: Array })
+  data: any[] | null = null;
 
   @property({ type: Array })
   data: any[] | null = null;
@@ -27,6 +31,7 @@ export class VegaLiteComponent extends LitElement {
 
   private _view: any = null;
   private _renderId = 0;
+  private _dispose: (() => void) | null = null;
 
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
@@ -37,6 +42,7 @@ export class VegaLiteComponent extends LitElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this._dispose?.();
     this.finalizeView();
   }
 
@@ -47,8 +53,8 @@ export class VegaLiteComponent extends LitElement {
     }
   }
 
-  async renderVega() {
-    if (!this.spec || !this.visContainer) return;
+  async renderVega(spec: VisualizationSpec) {
+    if (!this.visContainer) return;
 
     this._renderId++;
     const currentRenderId = this._renderId;
