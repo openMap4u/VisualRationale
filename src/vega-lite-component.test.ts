@@ -75,4 +75,29 @@ describe('VegaLiteComponent', () => {
     expect(view).toBeTruthy();
     expect(el.data).toEqual(data);
   });
+
+  it('accepts a plain object spec and renders', async () => {
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "data": { "values": [{a: 'A', b: 28}] },
+      "mark": "bar",
+      "encoding": {
+         "x": {"field": "a", "type": "ordinal"},
+         "y": {"field": "b", "type": "quantitative"}
+      }
+    };
+
+    const el = document.createElement('vega-lite-component') as VegaLiteComponent;
+    document.body.appendChild(el);
+
+    const rendered = new Promise((resolve) => {
+      el.addEventListener('vega-rendered', resolve, { once: true });
+    });
+
+    // Assign plain object
+    el.spec = spec as any;
+
+    await rendered;
+    expect(el.spec).toEqual(spec);
+  });
 });

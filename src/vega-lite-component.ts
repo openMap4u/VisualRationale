@@ -18,10 +18,7 @@ export class VegaLiteComponent extends LitElement {
   `;
 
   @property({ attribute: false })
-  spec: Signal<VisualizationSpec | null> | null = null;
-
-  @property({ type: Array })
-  data: any[] | null = null;
+  spec: Signal<VisualizationSpec | null> | VisualizationSpec | null = null;
 
   @query('#vis')
   visContainer!: HTMLDivElement;
@@ -30,16 +27,55 @@ export class VegaLiteComponent extends LitElement {
   private _renderId = 0;
   private _dispose: (() => void) | null = null;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.spec && this.spec instanceof Signal) {
+      this._setupSpecEffect();
+    }
+  }
+
   override updated(changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>) {
     super.updated(changedProperties);
-    if ((changedProperties.has('spec') || changedProperties.has('data')) && this.spec) {
+
+    if (changedProperties.has('spec')) {
+      if (this.spec instanceof Signal) {
+        this._setupSpecEffect();
+      } else {
+        // Dispose existing effect if we switched from Signal to plain object
+        if (this._dispose) {
+          this._dispose();
+          this._dispose = null;
+        }
+        this.renderVega();
+      }
+    } else if (changedProperties.has('data')) {
       this.renderVega();
+    }
+  }
+
+  private _setupSpecEffect() {
+    if (this._dispose) {
+      this._dispose();
+      this._dispose = null;
+    }
+
+    // Only setup effect if it is a signal
+    const spec = this.spec;
+    if (spec instanceof Signal) {
+      this._dispose = effect(() => {
+        // Access value to ensure tracking
+        spec.value;
+        this.renderVega();
+      });
     }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this._dispose?.();
+    if (this._dispose) {
+      this._dispose();
+      this._dispose = null;
+    }
     this.finalizeView();
   }
 
