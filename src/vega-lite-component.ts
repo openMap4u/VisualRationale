@@ -20,9 +20,6 @@ export class VegaLiteComponent extends LitElement {
   @property({ attribute: false })
   spec: Signal<VisualizationSpec | null> | VisualizationSpec | null = null;
 
-  @property({ type: Array })
-  data: any[] | null = null;
-
   @query('#vis')
   visContainer!: HTMLDivElement;
 
@@ -90,9 +87,7 @@ export class VegaLiteComponent extends LitElement {
   }
 
   async renderVega() {
-    // If container is not ready, we can't render.
-    // This might happen if effect runs before first render.
-    if (!this.visContainer) return;
+    if (!this.visContainer || !this.spec) return;
 
     this._renderId++;
     const currentRenderId = this._renderId;
@@ -100,21 +95,15 @@ export class VegaLiteComponent extends LitElement {
     try {
       this.finalizeView();
 
-      const spec = this.spec;
-      let currentSpec: VisualizationSpec | null = null;
-      if (spec instanceof Signal) {
-        currentSpec = spec.value;
-      } else {
-        currentSpec = spec;
-      }
+      // Access signal value if it's a signal, otherwise use it directly (if changed to plain object later)
+      // The type says Signal<VisualizationSpec | null> | null
+      const currentSpec = this.spec instanceof Signal ? this.spec.value : this.spec;
 
-      if (!currentSpec) {
-          return;
-      }
+      if (!currentSpec) return;
 
-      let specToRender: any = currentSpec;
+      let specToRender = currentSpec;
       if (this.data) {
-        specToRender = { ...specToRender, data: { values: this.data } };
+        specToRender = { ...currentSpec, data: { values: this.data } } as any;
       }
 
       const result = await embed(this.visContainer, specToRender, { actions: false });
