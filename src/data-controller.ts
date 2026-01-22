@@ -1,4 +1,4 @@
-import { VegaLiteComponent } from './vega-lite-component';
+import { DataConsumer } from './data-consumer';
 
 export type FilterPredicate = (item: any) => boolean;
 export type TransformFn = (data: any[]) => any[];
@@ -15,7 +15,7 @@ export interface TransformConfig {
 }
 
 interface Subscriber {
-  component: VegaLiteComponent;
+  component: DataConsumer;
   filters: FilterConfig[];
   transforms: TransformConfig[];
 }
@@ -47,7 +47,7 @@ export class DataController {
     return this.datasets.get(datasetName);
   }
 
-  register(datasetName: string, component: VegaLiteComponent, filter?: FilterPredicate) {
+  register(datasetName: string, component: DataConsumer, filter?: FilterPredicate) {
     if (!this.subscribers.has(datasetName)) {
       this.subscribers.set(datasetName, new Set());
     }
@@ -72,7 +72,7 @@ export class DataController {
     }
   }
 
-  unregister(datasetName: string, component: VegaLiteComponent) {
+  unregister(datasetName: string, component: DataConsumer) {
     const subs = this.subscribers.get(datasetName);
     if (subs) {
       for (const sub of subs) {
@@ -87,7 +87,7 @@ export class DataController {
     }
   }
 
-  addFilter(datasetName: string, component: VegaLiteComponent, filter: FilterConfig) {
+  addFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
           sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
@@ -95,7 +95,7 @@ export class DataController {
       }
   }
 
-  removeFilter(datasetName: string, component: VegaLiteComponent, filterId: string) {
+  removeFilter(datasetName: string, component: DataConsumer, filterId: string) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
           sub.filters = sub.filters.filter(f => f.id !== filterId);
@@ -103,7 +103,7 @@ export class DataController {
       }
   }
 
-  addTransform(datasetName: string, component: VegaLiteComponent, transform: TransformConfig) {
+  addTransform(datasetName: string, component: DataConsumer, transform: TransformConfig) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
           sub.transforms.push(transform);
@@ -111,7 +111,7 @@ export class DataController {
       }
   }
 
-  removeTransform(datasetName: string, component: VegaLiteComponent, transformId: string) {
+  removeTransform(datasetName: string, component: DataConsumer, transformId: string) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
           sub.transforms = sub.transforms.filter(t => t.id !== transformId);
@@ -119,7 +119,7 @@ export class DataController {
       }
   }
 
-  private getSubscriber(datasetName: string, component: VegaLiteComponent): Subscriber | undefined {
+  private getSubscriber(datasetName: string, component: DataConsumer): Subscriber | undefined {
       const subs = this.subscribers.get(datasetName);
       if (subs) {
           for (const sub of subs) {

@@ -1,10 +1,11 @@
-import { LitElement, html, css, PropertyValueMap } from 'lit';
+import { html, css, PropertyValueMap } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import embed, { VisualizationSpec } from 'vega-embed';
 import { effect, Signal } from '@preact/signals-core';
+import { BaseDataComponent } from './base-data-component';
 
 @customElement('vega-lite-component')
-export class VegaLiteComponent extends LitElement {
+export class VegaLiteComponent extends BaseDataComponent {
   static styles = css`
     :host {
       display: block;
