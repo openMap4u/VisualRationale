@@ -4,3 +4,5 @@ export * from './data-controller';
 export * from './data-consumer';
 export * from './base-data-component';
 export * from './open-layers-component';
+export * from './abstract-filter-component';
+export * from './timespan-slider-component';

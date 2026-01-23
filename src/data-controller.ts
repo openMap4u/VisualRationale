@@ -95,6 +95,19 @@ export class DataController {
       }
   }
 
+  updateFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
+      const sub = this.getSubscriber(datasetName, component);
+      if (sub) {
+          const index = sub.filters.findIndex(f => f.id === filter.id);
+          if (index !== -1) {
+              sub.filters[index] = { ...filter, operator: filter.operator || 'AND' };
+          } else {
+              sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
+          }
+          this.refreshSubscriber(datasetName, sub);
+      }
+  }
+
   removeFilter(datasetName: string, component: DataConsumer, filterId: string) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
