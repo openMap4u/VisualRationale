@@ -7,8 +7,8 @@ export abstract class AbstractFilterComponent extends LitElement {
   @property({ attribute: false })
   controller: DataController | null = null;
 
-  @property({ type: String })
-  dataset: string = '';
+  @property({ type: String, attribute: 'dataset-name' })
+  datasetName: string = '';
 
   @property({ attribute: false })
   targets: DataConsumer[] = [];
@@ -16,20 +16,20 @@ export abstract class AbstractFilterComponent extends LitElement {
   abstract getFilter(): FilterConfig | null;
 
   protected updateTargets() {
-    if (!this.controller || !this.dataset) return;
+    if (!this.controller || !this.datasetName) return;
     const filter = this.getFilter();
 
     this.targets.forEach(target => {
       if (filter) {
-        this.controller!.updateFilter(this.dataset, target, filter);
+        this.controller!.updateFilter(this.datasetName, target, filter);
       }
     });
   }
 
   protected removeFilterFromTargets(filterId: string) {
-    if (!this.controller || !this.dataset) return;
+    if (!this.controller || !this.datasetName) return;
     this.targets.forEach(target => {
-      this.controller!.removeFilter(this.dataset, target, filterId);
+      this.controller!.removeFilter(this.datasetName, target, filterId);
     });
   }
 }

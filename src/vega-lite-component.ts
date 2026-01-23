@@ -65,7 +65,7 @@ export class VegaLiteComponent extends BaseDataComponent {
     if (spec instanceof Signal) {
       this._dispose = effect(() => {
         // Access value to ensure tracking
-        spec.value;
+        void spec.value;
         this.renderVega();
       });
     }
