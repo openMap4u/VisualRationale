@@ -27,7 +27,7 @@ describe('TimespanSliderComponent', () => {
             // But we need to make sure the class is defined.
             // Since we import the class directly, we can define it.
              customElements.define('timespan-slider-component', TimespanSliderComponent);
-        } catch (e) {
+        } catch {
             // ignore if already defined
         }
     }
@@ -37,7 +37,7 @@ describe('TimespanSliderComponent', () => {
     consumer = new MockDataConsumer();
 
     slider.controller = controller as unknown as DataController;
-    slider.dataset = 'test-dataset';
+    slider.datasetName = 'test-dataset';
     slider.targets = [consumer];
     slider.min = 0;
     slider.max = 100;

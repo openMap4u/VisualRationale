@@ -5,7 +5,6 @@ import View from 'ol/View.js';
 import TileLayer from 'ol/layer/Tile.js';
 import OSM from 'ol/source/OSM.js';
 import { BaseDataComponent } from './base-data-component';
-// @ts-ignore
 import olStyles from 'ol/ol.css?inline';
 
 @customElement('open-layers-component')

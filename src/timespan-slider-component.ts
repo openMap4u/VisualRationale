@@ -2,28 +2,18 @@ import { html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { AbstractFilterComponent } from './abstract-filter-component';
 import { FilterConfig } from './data-controller';
+import { tailwindStyles } from './tailwind';
 
 @customElement('timespan-slider-component')
 export class TimespanSliderComponent extends AbstractFilterComponent {
-  static styles = css`
-    :host {
-      display: block;
-      padding: 10px;
-    }
-    .slider-container {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    input[type=range] {
-        width: 100%;
-    }
-  `;
+  static styles = [
+    tailwindStyles,
+    css`
+      :host {
+        display: block;
+      }
+    `,
+  ];
 
   @property({ type: String })
   field: string = 'timestamp';
@@ -80,23 +70,29 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
 
   render() {
     return html`
-      <div class="slider-container">
+      <div class="flex flex-col gap-1 p-2">
         <label>Timespan: ${this.start} - ${this.end}</label>
-        <div class="inputs">
-            <label>Start: <input
-                type="range"
-                min="${this.min}"
-                max="${this.max}"
-                .value="${this.start.toString()}"
-                @input="${(e: Event) => this.handleInput(e, 'start')}"
-            /></label>
-            <label>End: <input
-                type="range"
-                min="${this.min}"
-                max="${this.max}"
-                .value="${this.end.toString()}"
-                @input="${(e: Event) => this.handleInput(e, 'end')}"
-            /></label>
+        <div class="flex flex-col gap-1">
+          <label
+            >Start:
+            <input
+              class="w-full"
+              type="range"
+              min="${this.min}"
+              max="${this.max}"
+              .value="${this.start.toString()}"
+              @input="${(e: Event) => this.handleInput(e, 'start')}"
+          /></label>
+          <label
+            >End:
+            <input
+              class="w-full"
+              type="range"
+              min="${this.min}"
+              max="${this.max}"
+              .value="${this.end.toString()}"
+              @input="${(e: Event) => this.handleInput(e, 'end')}"
+          /></label>
         </div>
       </div>
     `;
