@@ -59,6 +59,13 @@ describe('TimespanSliderComponent', () => {
     expect(inputs?.length).toBe(2);
   });
 
+  it('renders track and range elements', () => {
+    const track = slider.shadowRoot?.querySelector('.slider-track');
+    const range = slider.shadowRoot?.querySelector('.slider-range');
+    expect(track).toBeTruthy();
+    expect(range).toBeTruthy();
+  });
+
   it('updates target filters when start input changes', async () => {
     const inputs = slider.shadowRoot?.querySelectorAll('input[type="range"]');
     const startInput = inputs![0] as HTMLInputElement;

@@ -12,6 +12,65 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
       :host {
         display: block;
       }
+      .slider-container {
+        position: relative;
+        height: 2rem;
+        width: 100%;
+      }
+      .slider-track {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 0.5rem;
+        width: 100%;
+        background-color: #e5e7eb; /* gray-200 */
+        border-radius: 9999px;
+        z-index: 1;
+      }
+      .slider-range {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 0.5rem;
+        background-color: #3b82f6; /* blue-500 */
+        border-radius: 9999px;
+        z-index: 2;
+      }
+      input[type=range] {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+        height: 2rem;
+        pointer-events: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        margin: 0;
+        z-index: 3;
+      }
+      input[type=range]::-webkit-slider-thumb {
+        pointer-events: auto;
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        background: #2563eb; /* blue-600 */
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      }
+      input[type=range]::-moz-range-thumb {
+        pointer-events: auto;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        background: #2563eb;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      }
     `,
   ];
 
@@ -69,30 +128,36 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
   }
 
   render() {
+    const range = this.max - this.min;
+    const startPercent = range === 0 ? 0 : ((this.start - this.min) / range) * 100;
+    const endPercent = range === 0 ? 100 : ((this.end - this.min) / range) * 100;
+    const widthPercent = endPercent - startPercent;
+
     return html`
       <div class="flex flex-col gap-1 p-2">
-        <label>Timespan: ${this.start} - ${this.end}</label>
-        <div class="flex flex-col gap-1">
-          <label
-            >Start:
-            <input
-              class="w-full"
-              type="range"
-              min="${this.min}"
-              max="${this.max}"
-              .value="${this.start.toString()}"
-              @input="${(e: Event) => this.handleInput(e, 'start')}"
-          /></label>
-          <label
-            >End:
-            <input
-              class="w-full"
-              type="range"
-              min="${this.min}"
-              max="${this.max}"
-              .value="${this.end.toString()}"
-              @input="${(e: Event) => this.handleInput(e, 'end')}"
-          /></label>
+        <label class="text-sm font-medium text-gray-700">Timespan: ${this.start} - ${this.end}</label>
+        <div class="slider-container">
+          <div class="slider-track"></div>
+          <div
+            class="slider-range"
+            style="left: ${startPercent}%; width: ${widthPercent}%"
+          ></div>
+          <input
+            type="range"
+            min="${this.min}"
+            max="${this.max}"
+            .value="${this.start.toString()}"
+            @input="${(e: Event) => this.handleInput(e, 'start')}"
+            aria-label="Start time"
+          />
+          <input
+            type="range"
+            min="${this.min}"
+            max="${this.max}"
+            .value="${this.end.toString()}"
+            @input="${(e: Event) => this.handleInput(e, 'end')}"
+            aria-label="End time"
+          />
         </div>
       </div>
     `;
