@@ -6,6 +6,9 @@ describe('Decorators', () => {
         @customElement('test-element')
         class TestElement extends HTMLElement {}
 
+        // Use the class to avoid unused variable error
+        expect(new TestElement()).toBeDefined();
+
         expect(customElements.get('test-element')).toBeDefined();
     });
 

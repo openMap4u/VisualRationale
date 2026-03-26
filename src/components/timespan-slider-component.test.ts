@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TimespanSliderComponent } from './timespan-slider-component';
-import { DataController } from './data-controller';
-import { DataConsumer } from './data-consumer';
+import { DataController } from '../api/data-controller';
+import { DataConsumer } from '../api/data-consumer';
 
 // Mock DataController (we only need the methods we use)
 class MockDataController {

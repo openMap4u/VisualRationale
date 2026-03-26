@@ -1,9 +1,14 @@
 import { html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { AbstractFilterComponent } from './abstract-filter-component';
-import { FilterConfig } from './data-controller';
-import { tailwindStyles } from './tailwind';
+import { FilterConfig } from '../api/data-controller';
+import { tailwindStyles } from '../tailwind';
 
+/**
+ * A Web Component that provides a dual-handle slider for filtering data by a numeric range.
+ * Extends `AbstractFilterComponent` to integrate with `DataController` and apply
+ * filters to target data consumers.
+ */
 @customElement('timespan-slider-component')
 export class TimespanSliderComponent extends AbstractFilterComponent {
   static styles = [
@@ -74,21 +79,41 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
     `,
   ];
 
+  /**
+   * The field name in the dataset to filter by. Defaults to 'timestamp'.
+   */
   @property({ type: String })
   field: string = 'timestamp';
 
+  /**
+   * The minimum allowed value of the slider.
+   */
   @property({ type: Number })
   min: number = 0;
 
+  /**
+   * The maximum allowed value of the slider.
+   */
   @property({ type: Number })
   max: number = 100;
 
+  /**
+   * The current selected start value of the range.
+   */
   @property({ type: Number })
   start: number = 0;
 
+  /**
+   * The current selected end value of the range.
+   */
   @property({ type: Number })
   end: number = 100;
 
+  /**
+   * Generates a filter configuration based on the current slider range.
+   *
+   * @returns The generated `FilterConfig` or null if no filter should be applied.
+   */
   getFilter(): FilterConfig | null {
     return {
       id: 'timespan-filter',
@@ -103,6 +128,14 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
     };
   }
 
+  /**
+   * Handles user interaction with the slider input elements.
+   * Ensures the start handle cannot cross the end handle, and vice versa.
+   * Updates target components after a successful input.
+   *
+   * @param e - The input event from the slider.
+   * @param type - Which slider handle triggered the event ('start' or 'end').
+   */
   handleInput(e: Event, type: 'start' | 'end') {
     const target = e.target as HTMLInputElement;
     const val = Number(target.value);

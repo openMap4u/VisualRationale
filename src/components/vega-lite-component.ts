@@ -4,6 +4,12 @@ import embed, { VisualizationSpec } from 'vega-embed';
 import { effect, Signal } from '@preact/signals-core';
 import { BaseDataComponent } from './base-data-component';
 
+/**
+ * A Web Component that wraps vega-embed to render Vega-Lite specifications.
+ * Inherits reactive `data` property from `BaseDataComponent`.
+ * Supports both static `VisualizationSpec` objects and reactive Signals for the spec.
+ * Emits `vega-rendered` upon successful render, and `vega-error` upon failure.
+ */
 @customElement('vega-lite-component')
 export class VegaLiteComponent extends BaseDataComponent {
   static styles = css`
@@ -18,6 +24,10 @@ export class VegaLiteComponent extends BaseDataComponent {
     }
   `;
 
+  /**
+   * The Vega-Lite visualization specification.
+   * Can be a plain object or a `@preact/signals-core` Signal for reactivity.
+   */
   @property({ attribute: false })
   spec: Signal<VisualizationSpec | null> | VisualizationSpec | null = null;
 
@@ -80,6 +90,9 @@ export class VegaLiteComponent extends BaseDataComponent {
     this.finalizeView();
   }
 
+  /**
+   * Cleans up the current vega-embed view, releasing resources to prevent memory leaks.
+   */
   finalizeView() {
     if (this._view) {
       this._view.finalize();
@@ -87,6 +100,10 @@ export class VegaLiteComponent extends BaseDataComponent {
     }
   }
 
+  /**
+   * Renders the Vega-Lite visualization using the current `spec` and `data`.
+   * Handles async race conditions and ensures only the most recent render result is kept.
+   */
   async renderVega() {
     if (!this.visContainer || !this.spec) return;
 

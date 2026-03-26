@@ -20,10 +20,21 @@ interface Subscriber {
   transforms: TransformConfig[];
 }
 
+/**
+ * Controller for managing datasets and distributing them to registered consumers.
+ * Supports loading data from URLs, setting data directly, and applying filters
+ * and transformations before distributing to subscribers.
+ */
 export class DataController {
   private datasets: Map<string, any[]> = new Map();
   private subscribers: Map<string, Set<Subscriber>> = new Map();
 
+  /**
+   * Loads a dataset from a given URL and notifies all subscribers.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param url - The URL to fetch the dataset from.
+   */
   async load(datasetName: string, url: string): Promise<void> {
     try {
       const response = await fetch(url);
@@ -38,15 +49,34 @@ export class DataController {
     }
   }
 
+  /**
+   * Sets the data for a given dataset directly and notifies all subscribers.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param data - The array of data items.
+   */
   setData(datasetName: string, data: any[]) {
     this.datasets.set(datasetName, data);
     this.notify(datasetName);
   }
 
+  /**
+   * Retrieves the current data for a given dataset.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @returns The data array or undefined if the dataset does not exist.
+   */
   getData(datasetName: string): any[] | undefined {
     return this.datasets.get(datasetName);
   }
 
+  /**
+   * Registers a consumer component to receive updates for a given dataset.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The component implementing `DataConsumer`.
+   * @param filter - An optional initial filter predicate to apply for this consumer.
+   */
   register(datasetName: string, component: DataConsumer, filter?: FilterPredicate) {
     if (!this.subscribers.has(datasetName)) {
       this.subscribers.set(datasetName, new Set());
@@ -72,6 +102,12 @@ export class DataController {
     }
   }
 
+  /**
+   * Unregisters a consumer component so it no longer receives updates for a given dataset.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The component implementing `DataConsumer` to unregister.
+   */
   unregister(datasetName: string, component: DataConsumer) {
     const subs = this.subscribers.get(datasetName);
     if (subs) {
@@ -87,6 +123,13 @@ export class DataController {
     }
   }
 
+  /**
+   * Adds a filter to a registered consumer for a specific dataset.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The registered consumer component.
+   * @param filter - The filter configuration to apply.
+   */
   addFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
@@ -95,6 +138,13 @@ export class DataController {
       }
   }
 
+  /**
+   * Updates an existing filter or adds it if it does not exist for a registered consumer.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The registered consumer component.
+   * @param filter - The filter configuration to update or add.
+   */
   updateFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
@@ -108,6 +158,13 @@ export class DataController {
       }
   }
 
+  /**
+   * Removes a filter from a registered consumer by its ID.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The registered consumer component.
+   * @param filterId - The ID of the filter to remove.
+   */
   removeFilter(datasetName: string, component: DataConsumer, filterId: string) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
@@ -116,6 +173,13 @@ export class DataController {
       }
   }
 
+  /**
+   * Adds a transformation to be applied to the data for a registered consumer.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The registered consumer component.
+   * @param transform - The transformation configuration to apply.
+   */
   addTransform(datasetName: string, component: DataConsumer, transform: TransformConfig) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
@@ -124,6 +188,13 @@ export class DataController {
       }
   }
 
+  /**
+   * Removes a transformation from a registered consumer by its ID.
+   *
+   * @param datasetName - The unique name identifying the dataset.
+   * @param component - The registered consumer component.
+   * @param transformId - The ID of the transformation to remove.
+   */
   removeTransform(datasetName: string, component: DataConsumer, transformId: string) {
       const sub = this.getSubscriber(datasetName, component);
       if (sub) {
