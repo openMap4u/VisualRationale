@@ -7,6 +7,11 @@ import OSM from 'ol/source/OSM.js';
 import { BaseDataComponent } from './base-data-component';
 import olStyles from 'ol/ol.css?inline';
 
+/**
+ * A Web Component that integrates OpenLayers to render maps.
+ * Inherits the reactive `data` property from `BaseDataComponent`,
+ * allowing it to act as a data consumer within the application.
+ */
 @customElement('open-layers-component')
 export class OpenLayersComponent extends BaseDataComponent {
   static styles = [
