@@ -84,13 +84,13 @@ export class DataController {
 
     const filters: FilterConfig[] = [];
     if (filter) {
-        filters.push({ id: 'initial', predicate: filter, operator: 'AND' });
+      filters.push({ id: 'initial', predicate: filter, operator: 'AND' });
     }
 
     this.subscribers.get(datasetName)!.add({
-        component,
-        filters,
-        transforms: []
+      component,
+      filters,
+      transforms: [],
     });
 
     // Initial update if data exists
@@ -131,11 +131,11 @@ export class DataController {
    * @param filter - The filter configuration to apply.
    */
   addFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
-      const sub = this.getSubscriber(datasetName, component);
-      if (sub) {
-          sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
-          this.refreshSubscriber(datasetName, sub);
-      }
+    const sub = this.getSubscriber(datasetName, component);
+    if (sub) {
+      sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
+      this.refreshSubscriber(datasetName, sub);
+    }
   }
 
   /**
@@ -146,16 +146,16 @@ export class DataController {
    * @param filter - The filter configuration to update or add.
    */
   updateFilter(datasetName: string, component: DataConsumer, filter: FilterConfig) {
-      const sub = this.getSubscriber(datasetName, component);
-      if (sub) {
-          const index = sub.filters.findIndex(f => f.id === filter.id);
-          if (index !== -1) {
-              sub.filters[index] = { ...filter, operator: filter.operator || 'AND' };
-          } else {
-              sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
-          }
-          this.refreshSubscriber(datasetName, sub);
+    const sub = this.getSubscriber(datasetName, component);
+    if (sub) {
+      const index = sub.filters.findIndex((f) => f.id === filter.id);
+      if (index !== -1) {
+        sub.filters[index] = { ...filter, operator: filter.operator || 'AND' };
+      } else {
+        sub.filters.push({ ...filter, operator: filter.operator || 'AND' });
       }
+      this.refreshSubscriber(datasetName, sub);
+    }
   }
 
   /**
@@ -166,11 +166,11 @@ export class DataController {
    * @param filterId - The ID of the filter to remove.
    */
   removeFilter(datasetName: string, component: DataConsumer, filterId: string) {
-      const sub = this.getSubscriber(datasetName, component);
-      if (sub) {
-          sub.filters = sub.filters.filter(f => f.id !== filterId);
-          this.refreshSubscriber(datasetName, sub);
-      }
+    const sub = this.getSubscriber(datasetName, component);
+    if (sub) {
+      sub.filters = sub.filters.filter((f) => f.id !== filterId);
+      this.refreshSubscriber(datasetName, sub);
+    }
   }
 
   /**
@@ -181,11 +181,11 @@ export class DataController {
    * @param transform - The transformation configuration to apply.
    */
   addTransform(datasetName: string, component: DataConsumer, transform: TransformConfig) {
-      const sub = this.getSubscriber(datasetName, component);
-      if (sub) {
-          sub.transforms.push(transform);
-          this.refreshSubscriber(datasetName, sub);
-      }
+    const sub = this.getSubscriber(datasetName, component);
+    if (sub) {
+      sub.transforms.push(transform);
+      this.refreshSubscriber(datasetName, sub);
+    }
   }
 
   /**
@@ -196,28 +196,28 @@ export class DataController {
    * @param transformId - The ID of the transformation to remove.
    */
   removeTransform(datasetName: string, component: DataConsumer, transformId: string) {
-      const sub = this.getSubscriber(datasetName, component);
-      if (sub) {
-          sub.transforms = sub.transforms.filter(t => t.id !== transformId);
-          this.refreshSubscriber(datasetName, sub);
-      }
+    const sub = this.getSubscriber(datasetName, component);
+    if (sub) {
+      sub.transforms = sub.transforms.filter((t) => t.id !== transformId);
+      this.refreshSubscriber(datasetName, sub);
+    }
   }
 
   private getSubscriber(datasetName: string, component: DataConsumer): Subscriber | undefined {
-      const subs = this.subscribers.get(datasetName);
-      if (subs) {
-          for (const sub of subs) {
-              if (sub.component === component) return sub;
-          }
+    const subs = this.subscribers.get(datasetName);
+    if (subs) {
+      for (const sub of subs) {
+        if (sub.component === component) return sub;
       }
-      return undefined;
+    }
+    return undefined;
   }
 
   private refreshSubscriber(datasetName: string, sub: Subscriber) {
-      const data = this.datasets.get(datasetName);
-      if (data) {
-          this.updateComponent(sub, data);
-      }
+    const data = this.datasets.get(datasetName);
+    if (data) {
+      this.updateComponent(sub, data);
+    }
   }
 
   private notify(datasetName: string) {
@@ -236,24 +236,24 @@ export class DataController {
 
     // Apply filters
     if (sub.filters.length > 0) {
-        dataToSet = dataToSet.filter(item => {
-             let acc = sub.filters[0].predicate(item);
-             for (let i = 1; i < sub.filters.length; i++) {
-                 const f = sub.filters[i];
-                 const val = f.predicate(item);
-                 if (f.operator === 'OR') {
-                     acc = acc || val;
-                 } else {
-                     acc = acc && val;
-                 }
-             }
-             return acc;
-        });
+      dataToSet = dataToSet.filter((item) => {
+        let acc = sub.filters[0].predicate(item);
+        for (let i = 1; i < sub.filters.length; i++) {
+          const f = sub.filters[i];
+          const val = f.predicate(item);
+          if (f.operator === 'OR') {
+            acc = acc || val;
+          } else {
+            acc = acc && val;
+          }
+        }
+        return acc;
+      });
     }
 
     // Apply transforms
     for (const t of sub.transforms) {
-        dataToSet = t.transform(dataToSet);
+      dataToSet = t.transform(dataToSet);
     }
 
     sub.component.data = dataToSet;

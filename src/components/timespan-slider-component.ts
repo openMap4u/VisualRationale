@@ -41,7 +41,7 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
         border-radius: 9999px;
         z-index: 2;
       }
-      input[type=range] {
+      input[type='range'] {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -54,7 +54,7 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
         margin: 0;
         z-index: 3;
       }
-      input[type=range]::-webkit-slider-thumb {
+      input[type='range']::-webkit-slider-thumb {
         pointer-events: auto;
         -webkit-appearance: none;
         appearance: none;
@@ -64,9 +64,11 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
         background: #2563eb; /* blue-600 */
         cursor: pointer;
         border: 2px solid white;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
       }
-      input[type=range]::-moz-range-thumb {
+      input[type='range']::-moz-range-thumb {
         pointer-events: auto;
         width: 1.25rem;
         height: 1.25rem;
@@ -74,7 +76,9 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
         background: #2563eb;
         cursor: pointer;
         border: 2px solid white;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        box-shadow:
+          0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
       }
     `,
   ];
@@ -124,7 +128,7 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
         // If data is Date object or string, user should map it or use numeric timestamps.
         return val >= this.start && val <= this.end;
       },
-      operator: 'AND'
+      operator: 'AND',
     };
   }
 
@@ -141,21 +145,21 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
     const val = Number(target.value);
 
     if (type === 'start') {
-        // Prevent start from crossing end
-        if (val > this.end) {
-             this.start = this.end;
-             target.value = this.end.toString();
-        } else {
-             this.start = val;
-        }
+      // Prevent start from crossing end
+      if (val > this.end) {
+        this.start = this.end;
+        target.value = this.end.toString();
+      } else {
+        this.start = val;
+      }
     } else {
-        // Prevent end from crossing start
-        if (val < this.start) {
-            this.end = this.start;
-            target.value = this.start.toString();
-        } else {
-            this.end = val;
-        }
+      // Prevent end from crossing start
+      if (val < this.start) {
+        this.end = this.start;
+        target.value = this.start.toString();
+      } else {
+        this.end = val;
+      }
     }
     this.updateTargets();
   }
@@ -168,13 +172,12 @@ export class TimespanSliderComponent extends AbstractFilterComponent {
 
     return html`
       <div class="flex flex-col gap-1 p-2">
-        <label class="text-sm font-medium text-gray-700">Timespan: ${this.start} - ${this.end}</label>
+        <label class="text-sm font-medium text-gray-700"
+          >Timespan: ${this.start} - ${this.end}</label
+        >
         <div class="slider-container">
           <div class="slider-track"></div>
-          <div
-            class="slider-range"
-            style="left: ${startPercent}%; width: ${widthPercent}%"
-          ></div>
+          <div class="slider-range" style="left: ${startPercent}%; width: ${widthPercent}%"></div>
           <input
             type="range"
             min="${this.min}"

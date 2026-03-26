@@ -43,7 +43,7 @@ export abstract class AbstractFilterComponent extends LitElement {
     if (!this.controller || !this.datasetName) return;
     const filter = this.getFilter();
 
-    this.targets.forEach(target => {
+    this.targets.forEach((target) => {
       if (filter) {
         this.controller!.updateFilter(this.datasetName, target, filter);
       }
@@ -57,7 +57,7 @@ export abstract class AbstractFilterComponent extends LitElement {
    */
   protected removeFilterFromTargets(filterId: string) {
     if (!this.controller || !this.datasetName) return;
-    this.targets.forEach(target => {
+    this.targets.forEach((target) => {
       this.controller!.removeFilter(this.datasetName, target, filterId);
     });
   }
