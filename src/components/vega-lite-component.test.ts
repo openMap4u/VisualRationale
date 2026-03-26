@@ -14,10 +14,10 @@ describe('VegaLiteComponent', () => {
 
   it('accepts a spec signal and emits vega-rendered event', async () => {
     const spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": { "values": [] },
-      "mark": "bar",
-      "encoding": {}
+      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+      data: { values: [] },
+      mark: 'bar',
+      encoding: {},
     };
 
     const el = document.createElement('vega-lite-component') as VegaLiteComponent;
@@ -38,13 +38,13 @@ describe('VegaLiteComponent', () => {
 
   it('updates visualization when data property is set', async () => {
     const spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": { "values": [] },
-      "mark": "bar",
-      "encoding": {
-        "x": {"field": "a", "type": "ordinal"},
-        "y": {"field": "b", "type": "quantitative"}
-      }
+      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+      data: { values: [] },
+      mark: 'bar',
+      encoding: {
+        x: { field: 'a', type: 'ordinal' },
+        y: { field: 'b', type: 'quantitative' },
+      },
     };
 
     const el = document.createElement('vega-lite-component') as VegaLiteComponent;
@@ -57,15 +57,21 @@ describe('VegaLiteComponent', () => {
     await new Promise((resolve) => el.addEventListener('vega-rendered', resolve, { once: true }));
 
     const data = [
-      {a: 'A', b: 28}, {a: 'B', b: 55}, {a: 'C', b: 43}
+      { a: 'A', b: 28 },
+      { a: 'B', b: 55 },
+      { a: 'C', b: 43 },
     ];
 
     let view: any;
     const renderedAgain = new Promise<void>((resolve) => {
-      el.addEventListener('vega-rendered', (e: any) => {
-        view = e.detail.view;
-        resolve();
-      }, { once: true });
+      el.addEventListener(
+        'vega-rendered',
+        (e: any) => {
+          view = e.detail.view;
+          resolve();
+        },
+        { once: true }
+      );
     });
 
     el.data = data;
@@ -78,13 +84,13 @@ describe('VegaLiteComponent', () => {
 
   it('accepts a plain object spec and renders', async () => {
     const spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "data": { "values": [{a: 'A', b: 28}] },
-      "mark": "bar",
-      "encoding": {
-         "x": {"field": "a", "type": "ordinal"},
-         "y": {"field": "b", "type": "quantitative"}
-      }
+      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+      data: { values: [{ a: 'A', b: 28 }] },
+      mark: 'bar',
+      encoding: {
+        x: { field: 'a', type: 'ordinal' },
+        y: { field: 'b', type: 'quantitative' },
+      },
     };
 
     const el = document.createElement('vega-lite-component') as VegaLiteComponent;

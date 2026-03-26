@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { TimespanSliderComponent } from './timespan-slider-component';
-import { DataController } from './data-controller';
-import { DataConsumer } from './data-consumer';
+import { DataController } from '../api/data-controller';
+import { DataConsumer } from '../api/data-consumer';
 
 // Mock DataController (we only need the methods we use)
 class MockDataController {
@@ -22,14 +22,14 @@ describe('TimespanSliderComponent', () => {
   beforeEach(async () => {
     // Register component if not already registered
     if (!customElements.get('timespan-slider-component')) {
-        try {
-            // It might be already imported via index.ts in other tests or real app
-            // But we need to make sure the class is defined.
-            // Since we import the class directly, we can define it.
-             customElements.define('timespan-slider-component', TimespanSliderComponent);
-        } catch {
-            // ignore if already defined
-        }
+      try {
+        // It might be already imported via index.ts in other tests or real app
+        // But we need to make sure the class is defined.
+        // Since we import the class directly, we can define it.
+        customElements.define('timespan-slider-component', TimespanSliderComponent);
+      } catch {
+        // ignore if already defined
+      }
     }
 
     slider = new TimespanSliderComponent();
@@ -50,7 +50,7 @@ describe('TimespanSliderComponent', () => {
 
   afterEach(() => {
     if (slider.isConnected) {
-        document.body.removeChild(slider);
+      document.body.removeChild(slider);
     }
   });
 
@@ -76,9 +76,13 @@ describe('TimespanSliderComponent', () => {
     await slider.updateComplete;
 
     expect(slider.start).toBe(20);
-    expect(controller.updateFilter).toHaveBeenCalledWith('test-dataset', consumer, expect.objectContaining({
-        id: 'timespan-filter'
-    }));
+    expect(controller.updateFilter).toHaveBeenCalledWith(
+      'test-dataset',
+      consumer,
+      expect.objectContaining({
+        id: 'timespan-filter',
+      })
+    );
 
     // Check predicate
     const filterCall = controller.updateFilter.mock.calls[0];
@@ -104,16 +108,16 @@ describe('TimespanSliderComponent', () => {
   });
 
   it('enforces min <= max constraints (start <= end)', async () => {
-      // Set start > current end (90)
-      const inputs = slider.shadowRoot?.querySelectorAll('input[type="range"]');
-      const startInput = inputs![0] as HTMLInputElement;
+    // Set start > current end (90)
+    const inputs = slider.shadowRoot?.querySelectorAll('input[type="range"]');
+    const startInput = inputs![0] as HTMLInputElement;
 
-      startInput.value = '95';
-      startInput.dispatchEvent(new Event('input'));
-      await slider.updateComplete;
+    startInput.value = '95';
+    startInput.dispatchEvent(new Event('input'));
+    await slider.updateComplete;
 
-      // Start should be capped at end (90)
-      expect(slider.start).toBe(90);
-      expect(startInput.value).toBe('90');
+    // Start should be capped at end (90)
+    expect(slider.start).toBe(90);
+    expect(startInput.value).toBe('90');
   });
 });
